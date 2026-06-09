@@ -13,7 +13,7 @@ export class BotAI {
     
     // 2. Lọc bỏ các từ đã bị sử dụng (HashSet Check)
     const usedSet = new Set(usedWords);
-    const validWords = possibleWords.filter(item => !usedSet.has(item.word.toLowerCase()));
+    let validWords = possibleWords.filter(item => !usedSet.has(item.word.toLowerCase()));
 
     // Nếu không còn từ hợp lệ nào (Bot bị bí hoặc hết từ mới)
     if (validWords.length === 0) {
