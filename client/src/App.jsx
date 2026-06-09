@@ -37,6 +37,7 @@ function App() {
       case 'lobby':
         return (
           <LobbyScreen 
+            isLightMode={isLightMode}
             settings={gameSettings}
             onSettingsChange={setGameSettings}
             onStart={() => setCurrentTab('game')}
@@ -45,13 +46,14 @@ function App() {
           />
         )
       case 'store':
-        return <StoreScreen vCoins={vCoins} inventory={inventory} onBuy={(price, newInventory) => { setVCoins(v => v - price); setInventory(newInventory); }} onBack={() => setCurrentTab('lobby')} />
+        return <StoreScreen isLightMode={isLightMode} vCoins={vCoins} inventory={inventory} onBuy={(price, newInventory) => { setVCoins(v => v - price); setInventory(newInventory); }} onBack={() => setCurrentTab('lobby')} />
       case 'flashcard':
-        return <FlashcardScreen flashcards={flashcards} onBack={() => setCurrentTab('lobby')} />
+        return <FlashcardScreen isLightMode={isLightMode} flashcards={flashcards} onBack={() => setCurrentTab('lobby')} />
       case 'game':
       default:
         return (
           <GameScreen 
+            isLightMode={isLightMode}
             playerName={player} 
             vCoins={vCoins}
             settings={gameSettings}
@@ -76,7 +78,7 @@ function App() {
       </button>
 
       {!player ? (
-        <AuthScreen onLogin={setPlayer} />
+        <AuthScreen onLogin={setPlayer} isLightMode={isLightMode} />
       ) : (
         renderTab()
       )}
