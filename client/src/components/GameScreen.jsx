@@ -17,7 +17,13 @@ export default function GameScreen({ playerName, vCoins, settings, inventory, on
   
   const timerRef = useRef(null);
 
-  const fetchMiniGameWord = async () => {
+  function showError(msg) {
+    setErrorMsg(msg);
+    setIsError(true);
+    setTimeout(() => setIsError(false), 500);
+  }
+
+  async function fetchMiniGameWord() {
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       const res = await fetch(`${apiUrl}/api/game/minigame?mode=${settings.mode}`, {
@@ -37,12 +43,12 @@ export default function GameScreen({ playerName, vCoins, settings, inventory, on
       } else {
         showError(data.error);
       }
-    } catch(e) {
+    } catch {
       showError("Lỗi kết nối API");
     }
-  };
+  }
 
-  const startTimer = () => {
+  function startTimer() {
     clearInterval(timerRef.current);
     setTimeLeft(settings.timeLimit);
     timerRef.current = setInterval(() => {
@@ -55,8 +61,9 @@ export default function GameScreen({ playerName, vCoins, settings, inventory, on
         return prev - 1;
       });
     }, 1000);
-  };
+  }
 
+  // CÁC EFFECT ĐỒNG BỘ
   useEffect(() => {
     if (settings.mode !== 'chain' && !botWord) {
       fetchMiniGameWord();
@@ -73,7 +80,7 @@ export default function GameScreen({ playerName, vCoins, settings, inventory, on
   const [isGameOver, setIsGameOver] = useState(false);
   const [gameOverMsg, setGameOverMsg] = useState('');
 
-  const handleGameOver = () => {
+  function handleGameOver() {
     SoundManager.gameOver();
     clearInterval(timerRef.current);
     const earned = Math.floor(score / 2);
@@ -84,9 +91,9 @@ export default function GameScreen({ playerName, vCoins, settings, inventory, on
     setGameOverMsg(msg);
     onAddCoins(earned);
     setIsGameOver(true);
-  };
+  }
 
-  const handleSurrender = () => {
+  function handleSurrender() {
     SoundManager.gameOver();
     clearInterval(timerRef.current);
     const earned = Math.floor(score / 4);
@@ -97,9 +104,9 @@ export default function GameScreen({ playerName, vCoins, settings, inventory, on
     setGameOverMsg(msg);
     onAddCoins(earned);
     setIsGameOver(true);
-  };
+  }
 
-  const resetGame = () => {
+  function resetGame() {
     setScore(0);
     setHistory([]);
     setCurrentWord('');
@@ -115,9 +122,9 @@ export default function GameScreen({ playerName, vCoins, settings, inventory, on
       setHasStarted(false);
       setTimeLeft(settings.timeLimit);
     }
-  };
+  }
 
-  const handleUseHint = async () => {
+  async function handleUseHint() {
     if (inventory.hint <= 0) return;
 
     if (settings.mode !== 'chain') {
@@ -146,21 +153,21 @@ export default function GameScreen({ playerName, vCoins, settings, inventory, on
       } else {
         showError(data.error || 'Lỗi lấy gợi ý');
       }
-    } catch (e) {
+    } catch {
       showError("Lỗi kết nối Server. Vui lòng tắt và bật lại Backend!");
     }
-  };
+  }
 
-  const handleUseRevive = () => {
+  function handleUseRevive() {
     if (inventory.revive <= 0) return;
     onUpdateInventory({ ...inventory, revive: inventory.revive - 1 });
     setIsGameOver(false);
     setTimeLeft(15);
     setWrongCount(0);
     startTimer();
-  };
+  }
 
-  const handleSubmit = async () => {
+  async function handleSubmit() {
     if (!currentWord.trim()) return;
 
     if (settings.mode !== 'chain') {
@@ -242,16 +249,10 @@ export default function GameScreen({ playerName, vCoins, settings, inventory, on
         setIsGameOver(true);
       }
 
-    } catch (err) {
+    } catch {
       showError('Lỗi kết nối Server. Vui lòng bật Backend Node.js.');
     }
-  };
-
-  const showError = (msg) => {
-    setErrorMsg(msg);
-    setIsError(true);
-    setTimeout(() => setIsError(false), 500);
-  };
+  }
 
   return (
     <div className="game-wrapper">
